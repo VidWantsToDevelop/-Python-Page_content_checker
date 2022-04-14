@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from deploy import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter.messagebox import showerror
 from threading import Thread
 from queue import Queue
@@ -17,9 +17,9 @@ class App(tk.Tk):
 
         self.window = Tk()
         self.window.title = "Let's catch some changes"
-        self.window.geometry("350x400")
+        self.window.geometry("350x410")
         self.window.configure(background="#222222")
-        self.window.maxsize(350, 400)
+        self.window.maxsize(350, 410)
         self.main_frame = Frame(self.window, bg='#222222')
         self.main_frame.pack()
         self.label = Label(self.main_frame, text="Copy your URL in the field below",
@@ -51,6 +51,14 @@ class App(tk.Tk):
         self.listbox = Listbox(self.main_frame)
         self.listbox.grid(column=0, row=5, padx=5, pady=5)
 
+        self.report_btn = Button(
+            self.main_frame, text='Generate a report', command=lambda: generate_report(self))
+        self.report_btn.grid(column=0, row=6, padx=5, pady=5)
+
+        self.help_btn = Button(self.main_frame, text='?', padx=7.5, pady=3,
+                               command=self.instructions)
+        self.help_btn.grid(column=0, row=6, sticky=E, pady=5)
+
         self.window.after(5000, self.checkQueue)
 
     def startFunc(self):
@@ -62,6 +70,9 @@ class App(tk.Tk):
         self.status.insert(END, "Tracing")
         self.status.tag_add("tag_name", "1.0", "end")
         self.th.start()
+
+    def instructions(self):
+        messagebox.showinfo("A brief instruction", "Delay between requests can be set in the input field (but the delay hardly depends on the hosting server of the website). Generate report button will create a pdf-formatted report within the \"reports\" folder. Enjoy!")
 
     def checkQueue(self):
         if self.status.get("1.0", "end-1c") != "Waiting" and self.status.get("1.0", "end-1c") != "Stopped":
